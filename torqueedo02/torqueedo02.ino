@@ -13,10 +13,15 @@ float volts,voltsMin;
 float throttleGain = 1.0;
 #define ADCSCALE 0.032882641967375
 
-
-
 #include <SoftwareSerial.h>
 SoftwareSerial SSerial(8,9); // RX, TX
+
+
+#include <Servo.h>
+Servo motor0;
+int motor0Pin = 10;
+int motor0Val = 0;
+
 
 #include <AS5045.h>
 #define CSpin   2
@@ -93,6 +98,7 @@ void setup() {
     ; // wait for serial port to connect. Needed for native USB port only
   }
 
+  motor0.attach( motor0Pin );
 
   tasker.setInterval( sendSpeed, 50 );
 
@@ -335,7 +341,7 @@ void loop() { // motor from command line
   volts = (analog0.getValue()*ADCSCALE)/8.00;
 
   throttle = encSoftOffset(enc.read());
-
+  
   // battery protection 
   /*
   if( volts < 3.40 ){ 
@@ -400,6 +406,10 @@ void loop() { // motor from command line
   //}
 
 
+  Serial.print("hStat:");
+  Serial.println( hStat );
+  
+
   if( hStat == 0 ){ // on start chk throttle for 50 0 -50 not more
     if( throttle == 0 ){
       hStat = 1;
@@ -414,6 +424,10 @@ void loop() { // motor from command line
     
   }else if( hStat == 1 ){ // operation mode
     workIter( throttle );
+    motor0Val = map( throttle, -1024, 1024, 0, 180 );
+    motor0.write( motor0Val );
+    Serial.print("motor0Val:");
+    Serial.println( motor0Val );
   
   }else if( hStat == 10 ){ // death star egg
     if( hEggCount < 255 ){
