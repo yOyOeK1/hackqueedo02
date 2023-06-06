@@ -11,7 +11,10 @@ DisplaySSD1306_128x32_I2C oled(-1); // This line is suitable for most platforms 
 ResponsiveAnalogRead analog0(A0, true);
 float volts,voltsMin;
 float throttleGain = 1.0;
-#define ADCSCALE 0.032882641967375
+// ver 01 
+// #define ADCSCALE 0.032882641967375
+// ver 02 at 4s
+#define ADCSCALE 0.035662651
 
 #include <SoftwareSerial.h>
 SoftwareSerial SSerial(8,9); // RX, TX
@@ -31,6 +34,10 @@ AS5045 enc (CSpin, CLKpin, DOpin) ;
 
 #include "Tasker.h"
 Tasker tasker;
+
+
+String str = "";
+
 
 
 void ledOn(){
@@ -66,17 +73,15 @@ void oled_fSmall(){
 void oled_doIntro(){
   oled.clear();
   
-  String txt = String(oled.width())+" x "+String(oled.height());
+  str = String(oled.width())+" x "+String(oled.height());
   
   oled_fBig();
   oled.printFixed(0,  0, "HACKqeedo", STYLE_NORMAL);
 
   oled_fSmall();
-  oled.printFixed(0,  18, "v1.3", STYLE_NORMAL);
-  oled.printFixed(0,  32-8, txt.c_str(), STYLE_NORMAL);
-  
-  
-  
+  oled.printFixed(0,  18, "v02.2", STYLE_NORMAL);
+  oled.printFixed(0,  32-8, str.c_str(), STYLE_NORMAL);
+    
 }
 
 int hEggCount = 0;
@@ -87,6 +92,7 @@ void setup() {
   oled.begin();
   
   oled_doIntro();
+  delay(200);
   voltsMin = 10.00;
 
   pinMode(LED_BUILTIN, OUTPUT);
@@ -99,8 +105,9 @@ void setup() {
   }
 
   motor0.attach( motor0Pin );
+  motor0.write( motor0Val );
 
-  tasker.setInterval( sendSpeed, 50 );
+  //tasker.setInterval( sendSpeed, 50 );
 
   
   if (!enc.begin ()){
@@ -273,7 +280,7 @@ int encSoftOffset( int in){
 
 
 uint16_t throttle = 0;
-String str = "";
+
 
 
 void workIter(uint16_t thrott){
@@ -291,9 +298,11 @@ void workIter(uint16_t thrott){
   oled.printFixed(0,0, "ES:");
   str = String( enc.valid () ? "ok" : "er" );
   oled.printFixed(30,  0, str.c_str(), STYLE_NORMAL);
-  oled.printFixed(0,8, "TH:");
+  
+  //oled.printFixed(0,8, "TH:");
   str = String(thrott);
-  oled.printFixed(30,  8, str.c_str(), STYLE_NORMAL);
+  //oled.printFixed(30,  8, str.c_str(), STYLE_NORMAL);
+  oled.printFixed(60,  0, str.c_str(), STYLE_NORMAL);
 
   str = String(throttleGain);
   oled.printFixed(90,  8, str.c_str(), STYLE_NORMAL);
@@ -338,7 +347,7 @@ void loop() { // motor from command line
   tasker.loop();
 
   analog0.update();
-  volts = (analog0.getValue()*ADCSCALE)/8.00;
+  volts = (analog0.getValue()*ADCSCALE)/4.00;//8.00;
 
   throttle = encSoftOffset(enc.read());
   
@@ -424,8 +433,13 @@ void loop() { // motor from command line
     
   }else if( hStat == 1 ){ // operation mode
     workIter( throttle );
-    motor0Val = map( throttle, -1024, 1024, 0, 180 );
-    motor0.write( motor0Val );
+    if( throttle < 10000 ){
+      motor0Val = map( throttle, 0, 980, 50, 160 );
+      motor0.write( motor0Val );
+      delay(15);
+    } else {
+      motor0.write( 0 );
+    }
     Serial.print("motor0Val:");
     Serial.println( motor0Val );
   
