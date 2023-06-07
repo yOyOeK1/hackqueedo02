@@ -1,6 +1,6 @@
 # hackqueedo 02
 
-**status of project** - start is in progress working unit testing ....
+**status of project** - working unit, testing ....
 
 ---
 
@@ -34,6 +34,20 @@ In this cane it is more using body but electronic section is out and different i
 - [x] **charging system** in my case will be done by RC model programmable / smart charger and original battery to motor wire / plug with option of balancing cells
 
 *UUUU all check so let's make check list one more time*
+
+
+
+| ![](./src/phenix_flashRoll1_thumb.jpg) | youtube video of phenix on the floor | [link](https://www.youtube.com/watch?v=VTYC8AS2mOE) |
+| -------------------------------------- | ---------------------------------------- | --------------------------------------------------- |
+|                                        |                                          |                                                     |
+
+
+
+
+
+
+
+
 
 ## project structure
 
@@ -100,10 +114,6 @@ And to talk to can bas if you have still working controller
 
 - **8, 9** as RX TX to `rs 485` if you use it to talk to still `working original ecu` in your unit then you need converter rs485
 
-
-
-
-
 ## TODO
 
 * some test's done and
@@ -121,10 +131,6 @@ And to talk to can bas if you have still working controller
   - [x] new firmware for ppm on torquedo can protocal 
 
 - [x] tests :)
-
-
-
-
 
 ---
 
