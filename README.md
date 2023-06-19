@@ -1,6 +1,6 @@
 # hackqueedo 02
 
-**status of project** - working unit, testing ....
+**status of project** - working unit, testing / using it
 
 ---
 
